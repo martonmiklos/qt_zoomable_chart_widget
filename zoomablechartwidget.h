@@ -2,6 +2,7 @@
 #define ZOOMABLECHARTWIDGET_H
 
 #include "zoomablechart.h"
+#include "zoomablechartview.h"
 
 #include <QRubberBand>
 #include <QWidget>
@@ -24,6 +25,7 @@ public:
     ~ZoomableChartWidget();
 
     ZoomableChart *chart() const;
+    ZoomableChartView *chartView() const;
 
 public slots:
     void setSeriesVisible(QAbstractSeries *series, bool visible = true);

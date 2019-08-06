@@ -78,6 +78,11 @@ ZoomableChart *ZoomableChartWidget::chart() const
     return m_chart;
 }
 
+ZoomableChartView *ZoomableChartWidget::chartView() const
+{
+    return ui->chartView;
+}
+
 void ZoomableChartWidget::setSeriesVisible(QAbstractSeries *series, bool visible)
 {
     series->setVisible(visible);

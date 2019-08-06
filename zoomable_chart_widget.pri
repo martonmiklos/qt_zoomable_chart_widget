@@ -14,3 +14,6 @@ SOURCES += \
   $$PWD/zoomablechartwidget.cpp
 
 INCLUDEPATH += $$PWD
+
+RESOURCES += \
+  $$PWD/res/zoomable_chart_widget_resources.qrc

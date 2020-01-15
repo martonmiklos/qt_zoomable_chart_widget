@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>horizontal_zoom.png</file>
+        <file>pan.png</file>
+        <file>rectangle_zoom.png</file>
+        <file>vertical_zoom.png</file>
+    </qresource>
+</RCC>

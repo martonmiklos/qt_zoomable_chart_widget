@@ -1,4 +1,5 @@
 #include "zoomablechartview.h"
+#include <QtGui/QGuiApplication>
 #include <QtGui/QMouseEvent>
 
 ZoomableChartView::ZoomableChartView(QWidget *parent) :
@@ -44,11 +45,37 @@ void ZoomableChartView::mouseMoveEvent(QMouseEvent *event)
 
 void ZoomableChartView::wheelEvent(QWheelEvent *event)
 {
-    if (event->angleDelta().y() > 0) {
-        zoomX(2, event->pos().x() - chart()->plotArea().x());
-    } else if (event->angleDelta().y() < 0) {
-        zoomX(0.5, event->pos().x() - chart()->plotArea().x());
+    bool zoomHorizontalAxis = false;
+    for (auto axis : chart()->axes()) {
+        if (axis->orientation() == Qt::Horizontal && axisTypeZoomableWithMouse(axis->type())) {
+            zoomHorizontalAxis = true;
+            break;
+        }
     }
+
+    if (QGuiApplication::keyboardModifiers() & Qt::Key_Control)
+        zoomHorizontalAxis = !zoomHorizontalAxis;
+
+    if (zoomHorizontalAxis) {
+        if (event->angleDelta().y() > 0) {
+            zoomX(2, event->pos().x() - chart()->plotArea().x());
+        } else if (event->angleDelta().y() < 0) {
+            zoomX(0.5, event->pos().x() - chart()->plotArea().x());
+        }
+    } else {
+        if (event->angleDelta().y() > 0) {
+            zoomY(2, event->pos().y() - chart()->plotArea().y());
+        } else if (event->angleDelta().y() < 0) {
+            zoomY(0.5, event->pos().y() - chart()->plotArea().y());
+        }
+    }
+}
+
+bool ZoomableChartView::axisTypeZoomableWithMouse(QAbstractAxis::AxisType type)
+{
+    return (type == QAbstractAxis::AxisTypeValue
+            || type == QAbstractAxis::AxisTypeLogValue
+            || type == QAbstractAxis::AxisTypeDateTime);
 }
 
 ZoomableChartView::ZoomMode ZoomableChartView::zoomMode() const
@@ -101,6 +128,32 @@ void ZoomableChartView::zoomX(qreal factor)
     QPointF center_orig = rect.center();
 
     rect.setWidth(widthOriginal / factor);
+
+    rect.moveCenter(center_orig);
+
+    chart()->zoomIn(rect);
+}
+
+void ZoomableChartView::zoomY(qreal factor, qreal ycenter)
+{
+    QRectF rect = chart()->plotArea();
+    qreal heightOriginal = rect.height();
+    rect.setHeight(heightOriginal / factor);
+    qreal centerScale = (ycenter / heightOriginal);
+
+    qreal topOffset = (ycenter - (rect.height() * centerScale) );
+
+    rect.moveTop(rect.x() + topOffset);
+    chart()->zoomIn(rect);
+}
+
+void ZoomableChartView::zoomY(qreal factor)
+{
+    QRectF rect = chart()->plotArea();
+    qreal heightOriginal = rect.height();
+    QPointF center_orig = rect.center();
+
+    rect.setHeight(heightOriginal / factor);
 
     rect.moveCenter(center_orig);
 

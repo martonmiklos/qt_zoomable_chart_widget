@@ -66,7 +66,7 @@ void ZoomableChartWidget::legendMarkerHovered(bool hover)
     marker->setFont(font);
 
     if (marker->series()->type() == QAbstractSeries::SeriesTypeLine) {
-        auto *series = qobject_cast<QLineSeries*>(marker->series());
+        auto series = qobject_cast<QLineSeries*>(marker->series());
         auto pen = series->pen();
         pen.setWidth(hover ? (pen.width() * 2) : (pen.width() / 2));
         series->setPen(pen);
@@ -133,7 +133,7 @@ void ZoomableChartWidget::seriesAdded(QAbstractSeries *series)
 {
     // Connect all markers to handler
     const auto markers = m_chart->legend()->markers(series);
-    for (auto *marker : markers) {
+    for (auto marker : markers) {
         QObject::connect(marker, &QLegendMarker::clicked,
                          this, &ZoomableChartWidget::legendMarkerClicked);
         QObject::connect(marker, &QLegendMarker::hovered,
@@ -145,7 +145,7 @@ void ZoomableChartWidget::seriesRemoved(QAbstractSeries *series)
 {
     // Connect all markers to handler
     const auto markers = m_chart->legend()->markers(series);
-    for (auto *marker : markers) {
+    for (auto marker : markers) {
         QObject::disconnect(marker, &QLegendMarker::clicked,
                             this, &ZoomableChartWidget::legendMarkerClicked);
         QObject::disconnect(marker, &QLegendMarker::hovered,

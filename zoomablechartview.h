@@ -23,6 +23,9 @@ public:
     void zoomX(qreal factor, qreal xcenter);
     void zoomX(qreal factor);
 
+    void zoomY(qreal factor, qreal ycenter);
+    void zoomY(qreal factor);
+
     //![2]
     ZoomMode zoomMode() const;
     void setZoomMode(const ZoomMode &zoomMode);
@@ -42,6 +45,8 @@ private:
     bool m_isTouching = false;
     QPointF m_lastMousePos;
     ZoomMode m_zoomMode = RectangleZoom;
+
+    static bool axisTypeZoomableWithMouse(QAbstractAxis::AxisType type);
 };
 
 #endif

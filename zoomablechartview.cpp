@@ -34,8 +34,24 @@ void ZoomableChartView::mouseMoveEvent(QMouseEvent *event)
 
     if (dragMode() == ScrollHandDrag) {
         if (event->buttons() & Qt::LeftButton) {
-            qreal dx = -(event->pos().x() - m_lastMousePos.x());
-            chart()->scroll(dx, 0);
+            bool moveHorizontalAxis = false;
+            for (auto axis : chart()->axes()) {
+                if (axis->orientation() == Qt::Horizontal && isAxisTypeZoomableWithMouse(axis->type())) {
+                    moveHorizontalAxis = true;
+                    break;
+                }
+            }
+
+            if (QGuiApplication::keyboardModifiers() & Qt::KeyboardModifier::ControlModifier)
+                moveHorizontalAxis = !moveHorizontalAxis;
+
+            if (moveHorizontalAxis) {
+                qreal dx = -(event->pos().x() - m_lastMousePos.x());
+                chart()->scroll(dx, 0);
+            } else {
+                qreal dy = event->pos().y() - m_lastMousePos.y();
+                chart()->scroll(0, dy);
+            }
         }
         m_lastMousePos = event->pos();
     }
@@ -47,13 +63,13 @@ void ZoomableChartView::wheelEvent(QWheelEvent *event)
 {
     bool zoomHorizontalAxis = false;
     for (auto axis : chart()->axes()) {
-        if (axis->orientation() == Qt::Horizontal && axisTypeZoomableWithMouse(axis->type())) {
+        if (axis->orientation() == Qt::Horizontal && isAxisTypeZoomableWithMouse(axis->type())) {
             zoomHorizontalAxis = true;
             break;
         }
     }
 
-    if (QGuiApplication::keyboardModifiers() & Qt::Key_Control)
+    if (QGuiApplication::keyboardModifiers() & Qt::KeyboardModifier::ControlModifier)
         zoomHorizontalAxis = !zoomHorizontalAxis;
 
     if (zoomHorizontalAxis) {
@@ -71,7 +87,7 @@ void ZoomableChartView::wheelEvent(QWheelEvent *event)
     }
 }
 
-bool ZoomableChartView::axisTypeZoomableWithMouse(QAbstractAxis::AxisType type)
+bool ZoomableChartView::isAxisTypeZoomableWithMouse(QAbstractAxis::AxisType type)
 {
     return (type == QAbstractAxis::AxisTypeValue
             || type == QAbstractAxis::AxisTypeLogValue

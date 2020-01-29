@@ -39,14 +39,13 @@ protected:
     void wheelEvent(QWheelEvent *event);
     //![2]
 
-
 private:
 
     bool m_isTouching = false;
     QPointF m_lastMousePos;
     ZoomMode m_zoomMode = RectangleZoom;
 
-    static bool axisTypeZoomableWithMouse(QAbstractAxis::AxisType type);
+    static bool isAxisTypeZoomableWithMouse(QAbstractAxis::AxisType type);
 };
 
 #endif

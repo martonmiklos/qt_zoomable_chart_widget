@@ -30,6 +30,7 @@ public:
     ZoomMode zoomMode() const;
     void setZoomMode(const ZoomMode &zoomMode);
 
+
 protected:
     bool viewportEvent(QEvent *event);
     void mousePressEvent(QMouseEvent *event);
@@ -42,10 +43,12 @@ protected:
 private:
 
     bool m_isTouching = false;
-    QPointF m_lastMousePos;
+    QPoint m_lastMousePos;
     ZoomMode m_zoomMode = RectangleZoom;
 
-    static bool isAxisTypeZoomableWithMouse(QAbstractAxis::AxisType type);
+    static bool isAxisTypeZoomableWithMouse(const QAbstractAxis::AxisType type);
+    QPointF getSeriesCoordFromChartCoord(const QPointF & mousePos, QAbstractSeries *series) const;
+    QPointF getChartCoordFromSeriesCoord(const QPointF & seriesPos, QAbstractSeries *series) const;
 };
 
 #endif

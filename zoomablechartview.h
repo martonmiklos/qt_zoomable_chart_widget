@@ -32,7 +32,6 @@ public:
 
 
 protected:
-    bool viewportEvent(QEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
@@ -43,7 +42,7 @@ protected:
 private:
 
     bool m_isTouching = false;
-    QPoint m_lastMousePos;
+    QPointF m_lastMousePos;
     ZoomMode m_zoomMode = RectangleZoom;
 
     static bool isAxisTypeZoomableWithMouse(const QAbstractAxis::AxisType type);

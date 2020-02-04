@@ -12,28 +12,17 @@ ZoomableChartView::ZoomableChartView(QWidget *parent) :
     setRubberBand(QChartView::RectangleRubberBand);
 }
 
-bool ZoomableChartView::viewportEvent(QEvent *event)
-{
-    if (event->type() == QEvent::TouchBegin) {
-        // By default touch events are converted to mouse events. So
-        // after this event we will get a mouse event also but we want
-        // to handle touch events as gestures only. So we need this safeguard
-        // to block mouse events that are actually generated from touch.
-        m_isTouching = true;
-    }
-    return QChartView::viewportEvent(event);
-}
-
 void ZoomableChartView::mousePressEvent(QMouseEvent *event)
 {
-    if (m_isTouching)
-        return;
+    m_isTouching = true;
+    m_lastMousePos = event->localPos();
+    qWarning() << "Press" << m_lastMousePos;
     QChartView::mousePressEvent(event);
 }
 
 void ZoomableChartView::mouseMoveEvent(QMouseEvent *event)
 {
-    if (m_isTouching)
+    if (!m_isTouching)
         return;
 
     if (dragMode() == ScrollHandDrag) {
@@ -51,16 +40,20 @@ void ZoomableChartView::mouseMoveEvent(QMouseEvent *event)
 
             if (moveHorizontalAxis) {
                 qreal dx = -(event->localPos().x() - m_lastMousePos.x());
+                qWarning() << "Move" << event->localPos().x() << dx;
                 for (auto series : this->chart()->series()) {
                     for (auto axis : series->attachedAxes()) {
                         if (axis->orientation() != Qt::Horizontal)
                             continue;
                         if (axis->property("rangeLimited").toBool()) {
                             RangeLimitedValueAxis *rangeLimitedAxis = static_cast<RangeLimitedValueAxis*>(axis);
+                            if (rangeLimitedAxis->orientation() != Qt::Horizontal)
+                                continue;
                             QPointF oldPoint = getSeriesCoordFromChartCoord(m_lastMousePos, series);
                             QPointF newPoint = getSeriesCoordFromChartCoord(event->localPos(), series);
                             qreal dxAxis = -(newPoint.x() - oldPoint.x());
-                            if ((rangeLimitedAxis->min() + dxAxis) < rangeLimitedAxis->lowerLimit()) {
+                            if (rangeLimitedAxis->isLowerRangeLimited()
+                                    && (rangeLimitedAxis->min() + dxAxis) < rangeLimitedAxis->lowerLimit()) {
                                 dxAxis = -(rangeLimitedAxis->min() - rangeLimitedAxis->lowerLimit());
                                 if (qFuzzyIsNull(dxAxis)) {
                                     dx = 0.0;
@@ -68,6 +61,19 @@ void ZoomableChartView::mouseMoveEvent(QMouseEvent *event)
                                     QPointF dummyCoord(oldPoint.x() - dxAxis, m_lastMousePos.y());
                                     dummyCoord = getChartCoordFromSeriesCoord(dummyCoord, series);
                                     dx = (m_lastMousePos.x() - dummyCoord.x());
+                                }
+                            }
+
+
+                            if (rangeLimitedAxis->isUpperRangeLimited()
+                                    && (rangeLimitedAxis->max() + dxAxis) > rangeLimitedAxis->upperLimit()) {
+                                dxAxis = -(rangeLimitedAxis->upperLimit() - rangeLimitedAxis->max());
+                                if (qFuzzyIsNull(dxAxis)) {
+                                    dx = 0.0;
+                                } else {
+                                    QPointF dummyCoord(oldPoint.x() - dxAxis, m_lastMousePos.y());
+                                    dummyCoord = getChartCoordFromSeriesCoord(dummyCoord, series);
+                                    dx = -(m_lastMousePos.x() - dummyCoord.x());
                                 }
                             }
                         }
@@ -82,17 +88,32 @@ void ZoomableChartView::mouseMoveEvent(QMouseEvent *event)
                             continue;
                         if (axis->property("rangeLimited").toBool()) {
                             RangeLimitedValueAxis *rangeLimitedAxis = static_cast<RangeLimitedValueAxis*>(axis);
+                            if (rangeLimitedAxis->orientation() != Qt::Vertical)
+                                continue;
                             QPointF oldPoint = getSeriesCoordFromChartCoord(m_lastMousePos, series);
                             QPointF newPoint = getSeriesCoordFromChartCoord(event->localPos(), series);
                             qreal dyAxis = -(newPoint.y() - oldPoint.y());
-                            if ((rangeLimitedAxis->min() + dyAxis) < rangeLimitedAxis->lowerLimit()) {
-                                dyAxis = -(rangeLimitedAxis->min() - rangeLimitedAxis->lowerLimit());
+                            if (rangeLimitedAxis->isLowerRangeLimited()
+                                    && (rangeLimitedAxis->min() + dyAxis) < rangeLimitedAxis->lowerLimit()) {
+                                dyAxis = rangeLimitedAxis->min() - rangeLimitedAxis->lowerLimit();
                                 if (qFuzzyIsNull(dyAxis)) {
                                     dy = 0.0;
                                 } else {
                                     QPointF dummyCoord(m_lastMousePos.x(), oldPoint.y() - dyAxis);
                                     dummyCoord = getChartCoordFromSeriesCoord(dummyCoord, series);
                                     dy = (m_lastMousePos.y() - dummyCoord.y());
+                                }
+                            }
+
+                            if (rangeLimitedAxis->isUpperRangeLimited()
+                                    && (rangeLimitedAxis->max() + dyAxis) > rangeLimitedAxis->upperLimit()) {
+                                dyAxis = rangeLimitedAxis->upperLimit() - rangeLimitedAxis->max();
+                                if (qFuzzyIsNull(dyAxis)) {
+                                    dy = 0.0;
+                                } else {
+                                    QPointF dummyCoord(m_lastMousePos.x(), oldPoint.y() - dyAxis);
+                                    dummyCoord = getChartCoordFromSeriesCoord(dummyCoord, series);
+                                    dy = -(m_lastMousePos.y() - dummyCoord.y());
                                 }
                             }
                         }
@@ -241,9 +262,7 @@ void ZoomableChartView::zoomY(qreal factor)
 
 void ZoomableChartView::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (m_isTouching)
-        m_isTouching = false;
-
+    m_isTouching = false;
     QChartView::mouseReleaseEvent(event);
 }
 

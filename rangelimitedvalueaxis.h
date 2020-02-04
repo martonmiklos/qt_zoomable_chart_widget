@@ -16,8 +16,8 @@ public:
     void disableLowerLimit();
     void disableUpperLimit();
 
-    bool lowerRangeLimited() const;
-    bool upperRangeLimited() const;
+    bool isLowerRangeLimited() const;
+    bool isUpperRangeLimited() const;
 
     qreal lowerLimit() const;
     qreal upperLimit() const;

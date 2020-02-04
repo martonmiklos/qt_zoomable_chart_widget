@@ -8,12 +8,20 @@ RangeLimitedValueAxis::RangeLimitedValueAxis(QObject *parent) :
 
 void RangeLimitedValueAxis::setLowerLimit(qreal value)
 {
+    if (m_limitLowerRange && value > m_upLimit) {
+        m_limitLowerRange = false;
+        return;
+    }
     m_lowLimit = value;
     m_limitLowerRange = true;
 }
 
 void RangeLimitedValueAxis::setUpperLimit(qreal value)
 {
+    if (m_limitLowerRange && m_lowLimit > value) {
+        m_limitUpperRange = false;
+        return;
+    }
     m_upLimit = value;
     m_limitUpperRange = true;
 }
@@ -28,12 +36,12 @@ void RangeLimitedValueAxis::disableUpperLimit()
     m_limitUpperRange = false;
 }
 
-bool RangeLimitedValueAxis::lowerRangeLimited() const
+bool RangeLimitedValueAxis::isLowerRangeLimited() const
 {
     return m_limitLowerRange;
 }
 
-bool RangeLimitedValueAxis::upperRangeLimited() const
+bool RangeLimitedValueAxis::isUpperRangeLimited() const
 {
     return m_limitUpperRange;
 }

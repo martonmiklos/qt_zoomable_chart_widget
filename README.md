@@ -53,3 +53,8 @@ You can show/hide series by clicking on the Legend markers. Inspired by the [Leg
 #### Legend hover highlight
 When hovering the mouse over the legend markers the respective series line width will be doubled:
 ![Legend hover](https://raw.githubusercontent.com/martonmiklos/qt_zoomable_chart_widget/master/screenshots/hover.png "Legend hover")
+
+#### Limiting scrolling/zooming of QValueAxis
+You can limit the scroll/zooming ranges of QValueAxes by using RangeLimitedValueAxis. 
+
+If you find this feature useful to be included in the Qt itself [please comment/vote on this issue.](https://codereview.qt-project.org/c/qt-creator/qt-creator/+/256985)

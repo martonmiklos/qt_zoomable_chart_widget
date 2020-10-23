@@ -40,7 +40,6 @@ void ZoomableChartView::mouseMoveEvent(QMouseEvent *event)
 
             if (moveHorizontalAxis) {
                 qreal dx = -(event->localPos().x() - m_lastMousePos.x());
-                qWarning() << "Move" << event->localPos().x() << dx;
                 for (auto series : this->chart()->series()) {
                     for (auto axis : series->attachedAxes()) {
                         if (axis->orientation() != Qt::Horizontal)

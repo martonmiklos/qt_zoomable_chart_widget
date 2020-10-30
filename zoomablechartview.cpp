@@ -28,7 +28,7 @@ void ZoomableChartView::mouseMoveEvent(QMouseEvent *event)
     if (dragMode() == ScrollHandDrag) {
         if (event->buttons() & Qt::LeftButton) {
             bool moveHorizontalAxis = false;
-            for (auto axis : chart()->axes()) {
+            for (const auto *axis : chart()->axes()) {
                 if (axis->orientation() == Qt::Horizontal && isAxisTypeZoomableWithMouse(axis->type())) {
                     moveHorizontalAxis = true;
                     break;
@@ -40,12 +40,12 @@ void ZoomableChartView::mouseMoveEvent(QMouseEvent *event)
 
             if (moveHorizontalAxis) {
                 qreal dx = -(event->localPos().x() - m_lastMousePos.x());
-                for (auto series : this->chart()->series()) {
-                    for (auto axis : series->attachedAxes()) {
+                for (auto *series : this->chart()->series()) {
+                    for (const auto *axis : series->attachedAxes()) {
                         if (axis->orientation() != Qt::Horizontal)
                             continue;
                         if (axis->property("rangeLimited").toBool()) {
-                            RangeLimitedValueAxis *rangeLimitedAxis = static_cast<RangeLimitedValueAxis*>(axis);
+                            const auto *rangeLimitedAxis = static_cast<const RangeLimitedValueAxis*>(axis);
                             if (rangeLimitedAxis->orientation() != Qt::Horizontal)
                                 continue;
                             QPointF oldPoint = getSeriesCoordFromChartCoord(m_lastMousePos, series);
@@ -81,8 +81,8 @@ void ZoomableChartView::mouseMoveEvent(QMouseEvent *event)
                 chart()->scroll(dx, 0);
             } else {
                 qreal dy = event->pos().y() - m_lastMousePos.y();
-                for (auto series : this->chart()->series()) {
-                    for (auto axis : series->attachedAxes()) {
+                for (const auto series : this->chart()->series()) {
+                    for (const auto axis : series->attachedAxes()) {
                         if (axis->orientation() != Qt::Vertical)
                             continue;
                         if (axis->property("rangeLimited").toBool()) {
@@ -142,15 +142,15 @@ void ZoomableChartView::wheelEvent(QWheelEvent *event)
 
     if (zoomHorizontalAxis) {
         if (event->angleDelta().y() > 0) {
-            zoomX(2, event->pos().x() - chart()->plotArea().x());
+            zoomX(2, event->position().x() - chart()->plotArea().x());
         } else if (event->angleDelta().y() < 0) {
-            zoomX(0.5, event->pos().x() - chart()->plotArea().x());
+            zoomX(0.5, event->position().x() - chart()->plotArea().x());
         }
     } else {
         if (event->angleDelta().y() > 0) {
-            zoomY(2, event->pos().y() - chart()->plotArea().y());
+            zoomY(2, event->position().y() - chart()->plotArea().y());
         } else if (event->angleDelta().y() < 0) {
-            zoomY(0.5, event->pos().y() - chart()->plotArea().y());
+            zoomY(0.5, event->position().y() - chart()->plotArea().y());
         }
     }
 }

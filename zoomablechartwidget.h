@@ -28,14 +28,14 @@ public:
     ZoomableChartView *chartView() const;
 
 public slots:
-    void setSeriesVisible(QAbstractSeries *series, bool visible = true);
+    void setSeriesVisible(QtCharts::QAbstractSeries *series, bool visible = true);
 
 private slots:
     void on_comboBoxZoomMode_activated(int index);
     void legendMarkerClicked();
     void legendMarkerHovered(bool hover);
-    void seriesAdded(QAbstractSeries *series);
-    void seriesRemoved(QAbstractSeries *series);
+    void seriesAdded(QtCharts::QAbstractSeries *series);
+    void seriesRemoved(QtCharts::QAbstractSeries *series);
 
 private:
     Ui::ZoomableChartWidget *ui;

@@ -86,7 +86,7 @@ ZoomableChartView *ZoomableChartWidget::chartView() const
 void ZoomableChartWidget::setSeriesVisible(QAbstractSeries *series, bool visible)
 {
     series->setVisible(visible);
-    for (QLegendMarker *marker : m_chart->legend()->markers(series)) {
+    for (auto *marker : m_chart->legend()->markers(series)) {
         // Turn legend marker back to visible, since hiding series also hides the marker
         // and we don't want it to happen now.
         marker->setVisible(true);
@@ -115,8 +115,8 @@ void ZoomableChartWidget::setSeriesVisible(QAbstractSeries *series, bool visible
 
     for (QAbstractAxis *axis : m_chart->axes(Qt::Vertical)) {
         bool hideAxis = true;
-        for (QAbstractSeries *series : m_chart->series()) {
-            for (QAbstractAxis *attachedAxis : series->attachedAxes()) {
+        for (auto *series : m_chart->series()) {
+            for (const auto *attachedAxis : series->attachedAxes()) {
                 if (series->isVisible() && attachedAxis == axis) {
                     hideAxis = false;
                     break;

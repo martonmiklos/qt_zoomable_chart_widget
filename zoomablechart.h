@@ -13,8 +13,8 @@ public:
     void addSeries(QAbstractSeries *series);
     void removeSeries(QAbstractSeries *series);
 signals:
-    void seriesAdded(QAbstractSeries *series);
-    void seriesRemoved(QAbstractSeries *series);
+    void seriesAdded(QtCharts::QAbstractSeries *series);
+    void seriesRemoved(QtCharts::QAbstractSeries *series);
 };
 
 #endif // ZOOMABLECHART_H

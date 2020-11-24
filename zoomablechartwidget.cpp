@@ -83,6 +83,11 @@ ZoomableChartView *ZoomableChartWidget::chartView() const
     return ui->chartView;
 }
 
+void ZoomableChartWidget::addToolWidget(QWidget *widget)
+{
+    ui->horizontalLayoutToolbar->insertWidget(1, widget);
+}
+
 void ZoomableChartWidget::setSeriesVisible(QAbstractSeries *series, bool visible)
 {
     series->setVisible(visible);

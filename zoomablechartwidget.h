@@ -27,6 +27,8 @@ public:
     ZoomableChart *chart() const;
     ZoomableChartView *chartView() const;
 
+    void addToolWidget(QWidget *widget);
+
 public slots:
     void setSeriesVisible(QtCharts::QAbstractSeries *series, bool visible = true);
 

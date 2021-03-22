@@ -14,19 +14,19 @@ ZoomableChartWidget::ZoomableChartWidget(QWidget *parent) :
 
     QIcon panIcon;
     panIcon.addFile(QStringLiteral(":/icons/pan.png"), QSize(), QIcon::Normal, QIcon::Off);
-    ui->comboBoxZoomMode->addItem(panIcon, QString(""), ZoomableChartView::Pan);
+    ui->comboBoxZoomMode->addItem(panIcon, QString(), ZoomableChartView::Pan);
 
     QIcon rectZoomIcon;
     rectZoomIcon.addFile(QStringLiteral(":/icons/rectangle_zoom.png"), QSize(), QIcon::Normal, QIcon::Off);
-    ui->comboBoxZoomMode->addItem(rectZoomIcon, QString(""), ZoomableChartView::RectangleZoom);
+    ui->comboBoxZoomMode->addItem(rectZoomIcon, QString(), ZoomableChartView::RectangleZoom);
 
     QIcon vZoomIcon;
     vZoomIcon.addFile(QStringLiteral(":/icons/vertical_zoom.png"), QSize(), QIcon::Normal, QIcon::Off);
-    ui->comboBoxZoomMode->addItem(vZoomIcon, QString(""), ZoomableChartView::VerticalZoom);
+    ui->comboBoxZoomMode->addItem(vZoomIcon, QString(), ZoomableChartView::VerticalZoom);
 
     QIcon hZoomIcon;
     hZoomIcon.addFile(QStringLiteral(":/icons/horizontal_zoom.png"), QSize(), QIcon::Normal, QIcon::Off);
-    ui->comboBoxZoomMode->addItem(hZoomIcon, QString(""), ZoomableChartView::HorizontalZoom);
+    ui->comboBoxZoomMode->addItem(hZoomIcon, QString(), ZoomableChartView::HorizontalZoom);
 
     ui->chartView->setZoomMode(ZoomableChartView::Pan);
 

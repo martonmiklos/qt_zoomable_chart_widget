@@ -12,6 +12,7 @@ public:
     ZoomableChart(QGraphicsItem *parent = nullptr, Qt::WindowFlags wFlags = Qt::WindowFlags());
     void addSeries(QAbstractSeries *series);
     void removeSeries(QAbstractSeries *series);
+    void addAxis(QAbstractAxis *axis, Qt::Alignment alignment);
 signals:
     void seriesAdded(QtCharts::QAbstractSeries *series);
     void seriesRemoved(QtCharts::QAbstractSeries *series);

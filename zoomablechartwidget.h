@@ -38,6 +38,7 @@ private slots:
     void legendMarkerHovered(bool hover);
     void seriesAdded(QtCharts::QAbstractSeries *series);
     void seriesRemoved(QtCharts::QAbstractSeries *series);
+    void on_toolButtonFitInView_clicked();
 
 private:
     Ui::ZoomableChartWidget *ui;

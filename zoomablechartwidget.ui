@@ -30,6 +30,20 @@
       </spacer>
      </item>
      <item>
+      <widget class="QToolButton" name="toolButtonFitInView">
+       <property name="toolTip">
+        <string>Adjust zoom to fit all</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="res/zoomable_chart_widget_resources.qrc">
+         <normaloff>:/icons/zoom_to_fit_all.png</normaloff>:/icons/zoom_to_fit_all.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QComboBox" name="comboBoxZoomMode">
        <property name="maximumSize">
         <size>
@@ -53,6 +67,8 @@
    <header>zoomablechartview.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="res/zoomable_chart_widget_resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -2,6 +2,7 @@
 #include "ui_zoomablechartwidget.h"
 
 #include <QtCharts/QLegendMarker>
+#include <QDebug>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -154,7 +155,74 @@ void ZoomableChartWidget::seriesRemoved(QAbstractSeries *series)
         QObject::disconnect(marker, &QLegendMarker::clicked,
                             this, &ZoomableChartWidget::legendMarkerClicked);
         QObject::disconnect(marker, &QLegendMarker::hovered,
-                         this, &ZoomableChartWidget::legendMarkerHovered);
+                            this, &ZoomableChartWidget::legendMarkerHovered);
     }
 }
 
+
+void ZoomableChartWidget::on_toolButtonFitInView_clicked()
+{
+    QMap<const QAbstractAxis*, qreal> xmin, xmax, ymin, ymax;
+    qWarning() << m_chart->axes().count();
+    // loop on all axes (both vetival and horizontal)
+    for (const QAbstractAxis *axis : m_chart->axes()) {
+        // only QValueAxis supported at the moment
+        if (axis->type() != QAbstractAxis::AxisTypeValue)
+            continue;
+
+        // loop on all series attached to the axes and look for each min max point
+        for (auto *series : m_chart->series()) {
+            // at the moment only QLineSeries is supported for zoom to fit
+            if (series->type() != QAbstractSeries::SeriesTypeLine)
+                continue;
+
+            if (!xmin.contains(axis))
+                xmin[axis] = std::numeric_limits<qreal>::max();
+            if (!xmax.contains(axis))
+                xmax[axis] = -std::numeric_limits<qreal>::max();
+            if (!ymin.contains(axis))
+                ymin[axis] = std::numeric_limits<qreal>::max();
+            if (!ymax.contains(axis))
+                ymax[axis] = -std::numeric_limits<qreal>::max();
+
+            for (const auto *attachedAxis : series->attachedAxes()) {
+                if (series->isVisible() && attachedAxis == axis) {
+                    auto lineSeries = static_cast<const QLineSeries*>(series);
+                    for (const auto pt : lineSeries->points()) {
+                        qWarning() << attachedAxis->titleText() << pt.y() << ymin[axis] << ymax[axis];
+                        if (pt.x() < xmin[axis])
+                            xmin[axis] = pt.x();
+                        if (pt.x() > xmax[axis])
+                            xmax[axis] = pt.x();
+                        if (pt.y() < ymin[axis])
+                            ymin[axis] = pt.y();
+                        if (pt.y() > ymax[axis])
+                            ymax[axis] = pt.y();
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    for (auto key : xmin.keys())
+        qWarning() << ymin[key] << ymax[key] << key->titleText();
+
+    for (QAbstractAxis *axis : m_chart->axes()) {
+        if (axis->type() != QAbstractAxis::AxisTypeValue)
+            continue;
+        if (axis->alignment() == Qt::Horizontal) {
+            if (xmin.contains(axis))
+                axis->setMin(xmin[axis]);
+
+            if (xmax.contains(axis))
+                axis->setMax(xmax[axis]);
+        } else if (axis->alignment() == Qt::Vertical) {
+            if (ymin.contains(axis))
+                axis->setMin(ymin[axis]);
+
+            if (ymax.contains(axis))
+                axis->setMax(ymax[axis]);
+        }
+    }
+}

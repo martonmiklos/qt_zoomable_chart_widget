@@ -4,5 +4,6 @@
         <file>pan.png</file>
         <file>rectangle_zoom.png</file>
         <file>vertical_zoom.png</file>
+        <file>zoom_to_fit_all.png</file>
     </qresource>
 </RCC>

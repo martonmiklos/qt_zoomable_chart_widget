@@ -50,6 +50,8 @@ You can select 4 zoom modes with it:
 #### Legend show/hide
 You can show/hide series by clicking on the Legend markers. Inspired by the [Legend markers Qt example)](https://doc.qt.io/qt-5/qtcharts-legendmarkers-example.html)
 
+Protip: by pressing the Shift you can show/hide multiple series by a single click
+
 #### Legend hover highlight
 When hovering the mouse over the legend markers the respective series line width will be doubled:
 ![Legend hover](https://raw.githubusercontent.com/martonmiklos/qt_zoomable_chart_widget/master/screenshots/hover.png "Legend hover")

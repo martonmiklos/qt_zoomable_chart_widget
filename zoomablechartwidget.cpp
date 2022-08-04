@@ -50,11 +50,36 @@ void ZoomableChartWidget::on_comboBoxZoomMode_activated(int index)
 
 void ZoomableChartWidget::legendMarkerClicked()
 {
+    static QLegendMarker *lastMarker = nullptr;
     auto* marker = qobject_cast<QLegendMarker*>(sender());
     Q_ASSERT(marker);
 
     // Toggle visibility of series
     setSeriesVisible(marker->series(), !marker->series()->isVisible());
+
+    if (lastMarker) {
+        qWarning() << (QApplication::keyboardModifiers() & Qt::ShiftModifier)
+                   << (lastMarker->series()->isVisible() == marker->series()->isVisible());
+    }
+    if (lastMarker
+            && (lastMarker->series()->isVisible() == marker->series()->isVisible())
+            && (QApplication::keyboardModifiers() & Qt::ShiftModifier)) {
+        auto markers = m_chart->legend()->markers();
+        int startIndex = markers.indexOf(marker);
+        int lastIndex = markers.indexOf(lastMarker);
+        if (startIndex != -1 && lastIndex != -1) {
+            if (startIndex > lastIndex) {
+                auto tmp = lastIndex;
+                lastIndex = startIndex;
+                startIndex = tmp;
+            }
+
+            for (int i = (startIndex + 1); i<lastIndex; i++) {
+                setSeriesVisible(markers[i]->series(), !markers[i]->series()->isVisible());
+            }
+        }
+    }
+    lastMarker = marker;
 }
 
 void ZoomableChartWidget::legendMarkerHovered(bool hover)
@@ -92,7 +117,8 @@ void ZoomableChartWidget::addToolWidget(QWidget *widget)
 void ZoomableChartWidget::setSeriesVisible(QAbstractSeries *series, bool visible)
 {
     series->setVisible(visible);
-    for (auto *marker : m_chart->legend()->markers(series)) {
+    const auto markers = m_chart->legend()->markers(series);
+    for (auto *marker : markers) {
         // Turn legend marker back to visible, since hiding series also hides the marker
         // and we don't want it to happen now.
         marker->setVisible(true);
@@ -162,7 +188,7 @@ void ZoomableChartWidget::seriesRemoved(QAbstractSeries *series)
 
 void ZoomableChartWidget::on_toolButtonFitInView_clicked()
 {
-    QMap<const QAbstractAxis*, qreal> xmin, xmax, ymin, ymax;
+    QHash<const QAbstractAxis*, qreal> xmin, xmax, ymin, ymax;
     qWarning() << m_chart->axes().count();
     // loop on all axes (both vetival and horizontal)
     for (const QAbstractAxis *axis : m_chart->axes()) {
@@ -205,7 +231,8 @@ void ZoomableChartWidget::on_toolButtonFitInView_clicked()
         }
     }
 
-    for (auto key : xmin.keys())
+    const auto keys = xmin.keys();
+    for (auto key : keys)
         qWarning() << ymin[key] << ymax[key] << key->titleText();
 
     for (QAbstractAxis *axis : m_chart->axes()) {

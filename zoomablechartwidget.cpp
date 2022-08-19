@@ -50,23 +50,18 @@ void ZoomableChartWidget::on_comboBoxZoomMode_activated(int index)
 
 void ZoomableChartWidget::legendMarkerClicked()
 {
-    static QLegendMarker *lastMarker = nullptr;
+    static QLegendMarker *m_lastClickedMarker = nullptr;
     auto* marker = qobject_cast<QLegendMarker*>(sender());
     Q_ASSERT(marker);
 
     // Toggle visibility of series
     setSeriesVisible(marker->series(), !marker->series()->isVisible());
-
-    if (lastMarker) {
-        qWarning() << (QApplication::keyboardModifiers() & Qt::ShiftModifier)
-                   << (lastMarker->series()->isVisible() == marker->series()->isVisible());
-    }
-    if (lastMarker
-            && (lastMarker->series()->isVisible() == marker->series()->isVisible())
+    if (m_lastClickedMarker
+            && (m_lastClickedMarker->series()->isVisible() == marker->series()->isVisible())
             && (QApplication::keyboardModifiers() & Qt::ShiftModifier)) {
         auto markers = m_chart->legend()->markers();
         int startIndex = markers.indexOf(marker);
-        int lastIndex = markers.indexOf(lastMarker);
+        int lastIndex = markers.indexOf(m_lastClickedMarker);
         if (startIndex != -1 && lastIndex != -1) {
             if (startIndex > lastIndex) {
                 auto tmp = lastIndex;
@@ -79,7 +74,8 @@ void ZoomableChartWidget::legendMarkerClicked()
             }
         }
     }
-    lastMarker = marker;
+    m_lastClickedMarker = marker;
+    connect(m_lastClickedMarker, &QLegendMarker::destroyed, this, [=]() {m_lastClickedMarker = nullptr;});
 }
 
 void ZoomableChartWidget::legendMarkerHovered(bool hover)
@@ -189,7 +185,6 @@ void ZoomableChartWidget::seriesRemoved(QAbstractSeries *series)
 void ZoomableChartWidget::on_toolButtonFitInView_clicked()
 {
     QHash<const QAbstractAxis*, qreal> xmin, xmax, ymin, ymax;
-    qWarning() << m_chart->axes().count();
     // loop on all axes (both vetival and horizontal)
     for (const QAbstractAxis *axis : m_chart->axes()) {
         // only QValueAxis supported at the moment
@@ -215,7 +210,6 @@ void ZoomableChartWidget::on_toolButtonFitInView_clicked()
                 if (series->isVisible() && attachedAxis == axis) {
                     auto lineSeries = static_cast<const QLineSeries*>(series);
                     for (const auto pt : lineSeries->points()) {
-                        qWarning() << attachedAxis->titleText() << pt.y() << ymin[axis] << ymax[axis];
                         if (pt.x() < xmin[axis])
                             xmin[axis] = pt.x();
                         if (pt.x() > xmax[axis])
@@ -230,10 +224,6 @@ void ZoomableChartWidget::on_toolButtonFitInView_clicked()
             }
         }
     }
-
-    const auto keys = xmin.keys();
-    for (auto key : keys)
-        qWarning() << ymin[key] << ymax[key] << key->titleText();
 
     for (QAbstractAxis *axis : m_chart->axes()) {
         if (axis->type() != QAbstractAxis::AxisTypeValue)

@@ -10,7 +10,9 @@
 #include <QtCharts/QChart>
 #include <QtCharts/QLineSeries>
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 QT_CHARTS_USE_NAMESPACE
+#endif
 
 namespace Ui {
 class ZoomableChartWidget;
@@ -30,14 +32,14 @@ public:
     void addToolWidget(QWidget *widget);
 
 public slots:
-    void setSeriesVisible(QtCharts::QAbstractSeries *series, bool visible = true);
+    void setSeriesVisible(QAbstractSeries *series, bool visible = true);
 
 private slots:
     void on_comboBoxZoomMode_activated(int index);
     void legendMarkerClicked();
     void legendMarkerHovered(bool hover);
-    void seriesAdded(QtCharts::QAbstractSeries *series);
-    void seriesRemoved(QtCharts::QAbstractSeries *series);
+    void seriesAdded(QAbstractSeries *series);
+    void seriesRemoved(QAbstractSeries *series);
     void on_toolButtonFitInView_clicked();
 
 private:

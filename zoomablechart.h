@@ -3,7 +3,10 @@
 
 #include <QtCharts/QChart>
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 QT_CHARTS_USE_NAMESPACE
+#endif
+
 
 class ZoomableChart : public QChart
 {
@@ -14,8 +17,8 @@ public:
     void removeSeries(QAbstractSeries *series);
     void addAxis(QAbstractAxis *axis, Qt::Alignment alignment);
 signals:
-    void seriesAdded(QtCharts::QAbstractSeries *series);
-    void seriesRemoved(QtCharts::QAbstractSeries *series);
+    void seriesAdded(QAbstractSeries *series);
+    void seriesRemoved(QAbstractSeries *series);
 };
 
 #endif // ZOOMABLECHART_H

@@ -78,7 +78,7 @@ void ZoomableChartWidget::legendMarkerClicked()
         }
     }
     m_lastClickedMarker = marker;
-    connect(m_lastClickedMarker, &QLegendMarker::destroyed, this, [=]() {m_lastClickedMarker = nullptr;});
+    connect(m_lastClickedMarker, &QLegendMarker::destroyed, this, [this]() {m_lastClickedMarker = nullptr;});
 }
 
 void ZoomableChartWidget::legendMarkerHovered(bool hover)

@@ -12,6 +12,13 @@ ZoomableChartView::ZoomableChartView(QWidget *parent) :
     setRubberBand(QChartView::RectangleRubberBand);
 }
 
+
+ZoomableChartView::ZoomableChartView(QChart *chart, QWidget *parent) :
+    QChartView(chart,parent)
+{
+    setRubberBand(QChartView::RectangleRubberBand);
+}
+
 void ZoomableChartView::mousePressEvent(QMouseEvent *event)
 {
     m_isTouching = true;

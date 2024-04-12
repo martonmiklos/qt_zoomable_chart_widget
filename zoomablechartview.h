@@ -21,6 +21,7 @@ public:
     };
 
     ZoomableChartView(QWidget *parent = 0);
+    ZoomableChartView(QChart *chart, QWidget *parent = nullptr);
 
     void zoomX(qreal factor, qreal xcenter);
     void zoomX(qreal factor);

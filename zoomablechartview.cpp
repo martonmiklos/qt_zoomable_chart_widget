@@ -1,6 +1,7 @@
 #include "zoomablechartview.h"
 #include <QtGui/QGuiApplication>
 #include <QtGui/QMouseEvent>
+#include <QtCharts/QLineSeries>
 
 #include "rangelimitedvalueaxis.h"
 
@@ -275,6 +276,31 @@ void ZoomableChartView::mouseReleaseEvent(QMouseEvent *event)
 //![1]
 void ZoomableChartView::keyPressEvent(QKeyEvent *event)
 {
+    auto resetZoom = [this]()-> void
+    {
+        // return if empty 
+        if(chart()->series().empty()) return;
+
+        auto seriesAbstract = chart()->series().at(0);
+        auto xySeries = dynamic_cast<QXYSeries*>(seriesAbstract);
+        if(xySeries)
+        {
+            auto const points = xySeries->points();
+            auto [point_minX, point_maxX] = std::minmax_element(points.begin(), points.end(),
+            [](const QPointF p1, const QPointF p2){
+               return p1.x() < p2.y();  
+            });
+
+            auto [point_minY, point_maxY] = std::minmax_element(points.begin(), points.end(),
+            [](const QPointF p1, const QPointF p2){
+               return p1.y() < p2.y();  
+            });
+
+            chart()->axes(Qt::Horizontal).first()->setRange(point_minX->x() , point_maxX->x());
+            chart()->axes(Qt::Vertical).first()->setRange(point_minY->y(), point_maxY->y());
+        }
+    };
+
     switch (event->key()) {
     case Qt::Key_Plus:
         chart()->zoomIn();
@@ -294,6 +320,9 @@ void ZoomableChartView::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_Down:
         chart()->scroll(0, -10);
+        break;
+    case Qt::Key_Question:
+        resetZoom();
         break;
     default:
         QGraphicsView::keyPressEvent(event);

@@ -12,8 +12,8 @@ if (NOT DEFINED ZOOMABLECHART_MASTER_PROJECT)
   endif ()
 
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Charts)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Charts)
 
 add_library(zoomablechart
     rangelimitedvalueaxis.cpp       
@@ -36,7 +36,7 @@ set_target_properties(zoomablechart PROPERTIES
 	AUTORCC ON
 )
 
-target_link_libraries(zoomablechart PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(zoomablechart PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Charts)
 target_include_directories(zoomablechart PUBLIC ./)
 
 if(ZOOMABLECHART_MASTER_PROJECT)
